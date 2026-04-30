@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNextPath } from "@/lib/safe-redirect";
 
 const PROTECTED_PREFIXES = ["/leads", "/upload"];
 const AUTH_PAGES = ["/login", "/signup"];
@@ -59,10 +60,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Logged-in user landing on /login or /signup → send them to the app.
+  // Logged-in user landing on /login or /signup → send them to the app,
+  // honoring `?next=` if it's a safe internal path.
   if (user && AUTH_PAGES.includes(pathname)) {
+    const next = safeNextPath(request.nextUrl.searchParams.get("next"));
     const url = request.nextUrl.clone();
-    url.pathname = "/leads";
+    url.search = "";
+    url.pathname = next ?? "/leads";
     return NextResponse.redirect(url);
   }
 
