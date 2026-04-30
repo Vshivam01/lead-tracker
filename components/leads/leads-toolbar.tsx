@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { LogOut, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,11 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SignOutButton } from "@/components/leads/sign-out-button";
 import {
   LEAD_STATUSES,
   STATUS_LABELS,
 } from "@/lib/leads/constants";
-import { signOut } from "@/app/leads/actions";
 
 const ALL = "_all";
 
@@ -93,12 +93,7 @@ export function LeadsToolbar() {
             Upload
           </Link>
         </Button>
-        <form action={signOut}>
-          <Button type="submit" size="sm" variant="ghost">
-            <LogOut className="size-4" aria-hidden />
-            Sign out
-          </Button>
-        </form>
+        <SignOutButton />
       </div>
     </div>
   );
