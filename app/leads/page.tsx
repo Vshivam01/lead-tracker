@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Inbox, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -190,22 +191,26 @@ export default async function LeadsPage({
 }
 
 function EmptyState({ filtered }: { filtered: boolean }) {
+  const Icon = filtered ? SearchX : Inbox;
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+        <div className="bg-muted flex size-12 items-center justify-center rounded-full">
+          <Icon className="size-5" aria-hidden />
+        </div>
         <p className="font-medium">
           {filtered ? "No leads match these filters." : "No leads yet."}
         </p>
         <p className="text-muted-foreground max-w-sm text-sm">
           {filtered
-            ? "Try clearing the search or status filter."
+            ? "Try a different search term or clear the status filter."
             : "Upload a CSV to get started."}
         </p>
-        {!filtered ? (
-          <Button asChild className="mt-2">
-            <Link href="/upload">Upload your first leads →</Link>
-          </Button>
-        ) : null}
+        <Button asChild variant={filtered ? "outline" : "default"} className="mt-2">
+          <Link href={filtered ? "/leads" : "/upload"}>
+            {filtered ? "Clear filters" : "Upload your first leads →"}
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   );
