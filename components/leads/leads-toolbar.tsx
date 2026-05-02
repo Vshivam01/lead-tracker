@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { Upload } from "lucide-react";
+import { LayoutDashboard, Upload } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,10 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SignOutButton } from "@/components/leads/sign-out-button";
-import {
-  LEAD_STATUSES,
-  STATUS_LABELS,
-} from "@/lib/leads/constants";
+import { LEAD_STATUSES, STATUS_LABELS } from "@/lib/leads/constants";
 
 const ALL = "_all";
 
@@ -26,13 +24,10 @@ export function LeadsToolbar() {
   const pathname = usePathname();
   const sp = useSearchParams();
   const [, startTransition] = useTransition();
-
   const [query, setQuery] = useState(sp.get("q") ?? "");
   const isFirstRender = useRef(true);
 
   // Push the search query into the URL after a 300ms idle period.
-  // The first-render skip prevents replacing the URL on mount with the
-  // same value the user just typed in.
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -68,7 +63,7 @@ export function LeadsToolbar() {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search business or phone…"
+          placeholder="Search business or phone..."
           className="sm:max-w-xs"
         />
         <Select value={sp.get("status") ?? ALL} onValueChange={setStatus}>
@@ -85,8 +80,13 @@ export function LeadsToolbar() {
           </SelectContent>
         </Select>
       </div>
-
       <div className="flex items-center gap-2">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/">
+            <LayoutDashboard className="size-4" aria-hidden />
+            Dashboard
+          </Link>
+        </Button>
         <Button asChild size="sm">
           <Link href="/upload">
             <Upload className="size-4" aria-hidden />

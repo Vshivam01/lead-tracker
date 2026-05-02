@@ -11,6 +11,12 @@ export default function UploadPage() {
         >
           ← Back to leads
         </Link>
+        <Link
+          href="/"
+          className="text-muted-foreground hover:text-foreground text-sm"
+        >
+                                       ← Back to Dashboard
+        </Link>
       </div>
 
       <h1 className="text-2xl font-semibold tracking-tight">Upload leads</h1>
