@@ -20,6 +20,7 @@ import {
   type LeadStatus,
   type SortableColumn,
 } from "@/lib/leads/constants";
+import { computePagination } from "@/lib/leads/pagination";
 import { createClient } from "@/lib/supabase/server";
 
 const PAGE_SIZE = 25;
@@ -70,7 +71,7 @@ export default async function LeadsPage({
     ? (pickString(sp.sort) as SortableColumn)
     : DEFAULT_SORT;
   const pageRaw = Number.parseInt(pickString(sp.page) ?? "1", 10);
-  const page = Math.max(1, Number.isFinite(pageRaw) ? pageRaw : 1);
+  const requestedPage = Math.max(1, Number.isFinite(pageRaw) ? pageRaw : 1);
 
   const supabase = await createClient();
 
@@ -87,14 +88,17 @@ export default async function LeadsPage({
   const ascending = sort === "business_name";
   query = query
     .order(sort, { ascending, nullsFirst: false })
-    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+    .range(
+      (requestedPage - 1) * PAGE_SIZE,
+      requestedPage * PAGE_SIZE - 1,
+    );
 
   const { data, count, error } = await query;
   if (error) console.error("[/leads] query failed:", error);
 
   const leads = (data ?? []) as LeadRow[];
   const total = count ?? 0;
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const pagination = computePagination(total, requestedPage, PAGE_SIZE);
   const hasFilters = qRaw.length > 0 || !!status;
 
   function buildHref(targetPage: number): string {
@@ -176,11 +180,19 @@ export default async function LeadsPage({
 
             <div className="mt-4">
               <LeadsPagination
-                page={page}
-                pageCount={pageCount}
+                page={pagination.currentPage}
+                pageCount={pagination.totalPages}
                 total={total}
-                prevHref={page > 1 ? buildHref(page - 1) : null}
-                nextHref={page < pageCount ? buildHref(page + 1) : null}
+                prevHref={
+                  pagination.hasPrev
+                    ? buildHref(pagination.currentPage - 1)
+                    : null
+                }
+                nextHref={
+                  pagination.hasNext
+                    ? buildHref(pagination.currentPage + 1)
+                    : null
+                }
               />
             </div>
           </>
